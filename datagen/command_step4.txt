@@ -1,0 +1,6 @@
+TITLE - native patterson
+LABIN F1=FC PHI=PHIC
+GRID SAMPLE 3.0
+PATT
+END
+
