@@ -59,7 +59,7 @@ def create_batches():
             new_x = torch.unsqueeze(new_x, 0)
 
             
-            #new_x3 = torch.load('predictions_15_angle_retrain/' + trainlist[j] + '.pt')
+            #new_x3 = torch.load('predictions/' + trainlist[j] + '.pt')
             #new_x3 = new_x3[0,0,:,:,:]
             #new_x3 = torch.unsqueeze(new_x3, 0)
             
