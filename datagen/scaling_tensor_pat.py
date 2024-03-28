@@ -18,4 +18,4 @@ for x in idlist:
     matrix = torch.load(input_file)
     diff = max(max_value, abs(min_value))
     new_matrix = torch.div(matrix, diff)
-    torch.save(new_matrix, 'patterson_pt_scaled/' + x + '_patterson.pt')
+    torch.save(new_matrix, '../patterson_pt_scaled/' + x + '_patterson.pt')

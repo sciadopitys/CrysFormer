@@ -27,8 +27,8 @@ end=`echo "($SLURM_ARRAY_TASK_ID)*1350" | bc`
 #   then start=1
 # fi
 
+mkdir ../patterson_pt_scaled
 for j in {0..19}
 do
-    mkdir 8_patterson_pt_scaled_new2
     /usr/bin/python3 scaling_tensor_pat.py split_${j}.txt 1045.0 -47.0 ${j} &
 done
