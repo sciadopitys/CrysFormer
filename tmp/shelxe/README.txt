@@ -7,7 +7,7 @@ This helps to set the correct unit cell etc. input files needed are the
 ground truth amplitudes (used as Fobs), the ground truth .pdb file (used
 to get the unit cell etc in the shelxe input header), and the .mtz file
 created from the CrystFormer pytorch map file. To run in parallel, 
-gnu-parallel can be used. The scrit expects as input the file prefix.
+gnu-parallel can be used. The script expects as input the file prefix.
 I then makes a subdirecty from that input, creatres the input files needed
 to run shelxe starting from the map coefficients. 
 time (cat  /data/qp3/interpret_15_angle_training_newrange/list.txt | nice -n 5  parallel -j30  ./setup-shelxe-retrain.sh {}) &
