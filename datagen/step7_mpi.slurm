@@ -30,5 +30,5 @@ end=`echo "($SLURM_ARRAY_TASK_ID)*1350" | bc`
 for j in {0..19}
 do
     mkdir 7_electron_density_pt_${j}
-    /usr/bin/python3 convert_ccp4_to_pt_ed.py split_${j}.txt ${j} &
+    python3 convert_ccp4_to_pt_ed.py split_${j}.txt ${j} &
 done
