@@ -28,11 +28,11 @@ end=`echo "($SLURM_ARRAY_TASK_ID)*9804" | bc`
 #   then start=1
 # fi
 
-source /programs/sbgrid.shrc
-source /programs/x86_64-linux/ccp4/8.0/ccp4-8.0/bin/ccp4.setup-sh
+#source /programs/sbgrid.shrc
+source /path/to/ccp4-<version>/bin/ccp4.setup-s
 for j in {0..19}
 do
     export split=${j}
     mkdir 3_electron_density_mtz_res_${j}
-    cat split_${j}.txt | parallel -j 25 '/programs/x/ccp4/8.0/ccp4-8.0/bin/gemmi sfcalc --dmin 1.5 --to-mtz=3_electron_density_mtz_res_${split}/{}.gemmi.mtz ../2_pdb_reweight_allatom_clean_reorient_center/{}.pdb'
+    cat split_${j}.txt | parallel -j 25 'gemmi sfcalc --dmin 1.5 --to-mtz=3_electron_density_mtz_res_${split}/{}.gemmi.mtz ../2_pdb_reweight_allatom_clean_reorient_center/{}.pdb'
 done
