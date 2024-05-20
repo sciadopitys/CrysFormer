@@ -30,5 +30,5 @@ end=`echo "($SLURM_ARRAY_TASK_ID)*1350" | bc`
 mkdir ../electron_density_pt_scaled
 for j in {0..19}
 do
-    /usr/bin/python3 scaling_tensor_ed.py split_${j}.txt 4.5 -0.12 ${j} &
+    python3 scaling_tensor_ed.py split_${j}.txt 4.5 -0.12 ${j} &
 done
