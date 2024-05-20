@@ -29,7 +29,7 @@ end=`echo "($SLURM_ARRAY_TASK_ID)*9804" | bc`
 # fi
 
 #source /programs/sbgrid.shrc
-source /path/to/ccp4-<version>/bin/ccp4.setup-s
+source /path/to/ccp4-<version>/bin/ccp4.setup-sh
 for j in {0..19}
 do
     export split=${j}
