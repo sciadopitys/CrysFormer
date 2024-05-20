@@ -27,11 +27,11 @@ end=`echo "($SLURM_ARRAY_TASK_ID)*9804" | bc`
 #   then start=1
 # fi
 
-source /programs/sbgrid.shrc
-source /programs/x86_64-linux/ccp4/8.0/ccp4-8.0/bin/ccp4.setup-sh
+#source /programs/sbgrid.shrc
+source /path/to/ccp4-<version>/bin/ccp4.setup-sh
 for j in {0..19}
 do
     export split=${j}
     mkdir 4_patterson_ccp4_res_${j}
-    cat split_${j}.txt | parallel -j 25 '/programs/x/ccp4/8.0/ccp4-8.0/bin/fft hklin 3_electron_density_mtz_res_${split}/{}.gemmi.mtz mapout 4_patterson_ccp4_res_${split}/{}_patterson.ccp4 < command_step4.txt > 4_patterson_ccp4_res_${split}/{}_patterson.log'
+    cat split_${j}.txt | parallel -j 25 'fft hklin 3_electron_density_mtz_res_${split}/{}.gemmi.mtz mapout 4_patterson_ccp4_res_${split}/{}_patterson.ccp4 < command_step4.txt > 4_patterson_ccp4_res_${split}/{}_patterson.log'
 done
