@@ -14,9 +14,9 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import time
 import math
 import statistics
-import dataset_initial
+import batchgen.dataset_initial
 
-from vit_3d_newps_dist import ViT_encoder_decoder, ViT_vary_encoder_decoder, ViT_vary_encoder_decoder_partial_structure, ViT_vary_encoder_decoder_biggan_block
+from model.vit_3d_newps_dist import ViT_encoder_decoder, ViT_vary_encoder_decoder, ViT_vary_encoder_decoder_partial_structure, ViT_vary_encoder_decoder_biggan_block
 import random
 import argparse
 
@@ -31,15 +31,15 @@ def set_seed(args):
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu') #use GPU if possible
 torch.backends.cudnn.benchmark = True
 
-with open("training_indices_new2.txt") as myfile2:
+with open("example_ids/training_indices_new2.txt") as myfile2:
     indices = myfile2.readlines()
 indlist  = [x.rstrip() for x in indices]
 
-with open("test_new_dataset2.txt") as myfile: #select the first n_train examples as the training set, rest as validation set
+with open("example_ids/test_new_dataset2.txt") as myfile: #select the first n_train examples as the training set, rest as validation set
     testlist = myfile.readlines()
 testlist = [x.rstrip() for x in testlist]
 
-with open("new-dipeptide-AA-type-noclash_new2.list") as myfile1:
+with open("example_ids/new-dipeptide-AA-type-noclash_new2.list") as myfile1:
     examples = myfile1.readlines()
 examples  = [x.rstrip() for x in examples]
 

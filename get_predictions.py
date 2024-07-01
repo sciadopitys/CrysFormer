@@ -14,24 +14,24 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import time
 import math
 import statistics
-from vit_3d_newps_dist import ViT_encoder_decoder, ViT_vary_encoder_decoder, ViT_vary_encoder_decoder_partial_structure, ViT_vary_encoder_decoder_biggan_block
+from model.vit_3d_newps_dist import ViT_encoder_decoder, ViT_vary_encoder_decoder, ViT_vary_encoder_decoder_partial_structure, ViT_vary_encoder_decoder_biggan_block
 import argparse
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu') #use GPU if possible
 torch.backends.cudnn.benchmark = True
 
-with open("test_new_dataset2.txt") as myfile: #select the first n_train examples as the training set, rest as validation set
+with open("example_ids/test_new_dataset2.txt") as myfile: #select the first n_train examples as the training set, rest as validation set
     testlist = myfile.readlines()
 testlist = [x.rstrip() for x in testlist]
 
-with open("train_new_dataset2.txt") as myfile1: #select the first n_train examples as the training set, rest as validation set
+with open("example_ids/train_new_dataset2.txt") as myfile1: #select the first n_train examples as the training set, rest as validation set
     trainlist = myfile1.readlines()
 trainlist = [x.rstrip() for x in trainlist]
 
 full_list = trainlist + testlist
 
 
-with open("new-dipeptide-AA-type-noclash_new2.list") as myfile1:
+with open("example_ids/new-dipeptide-AA-type-noclash_new2.list") as myfile1:
     examples = myfile1.readlines()
 examples  = [x.rstrip() for x in examples]
         
