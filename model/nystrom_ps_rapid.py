@@ -2,9 +2,7 @@ import torch
 from torch import nn, einsum
 
 import math
-import time
-from einops import rearrange, repeat, reduce
-from einops.layers.torch import Rearrange
+from einops import rearrange, reduce
 import torch.nn.functional as F
 
 

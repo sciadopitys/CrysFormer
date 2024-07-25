@@ -1,22 +1,20 @@
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
 import torch 
 import torch.nn as nn
 import torch.fft
 import torch.cuda
-import csv
 import numpy as np
-import sys
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-import time
 import math
 import statistics
-import batchgen.dataset_initial
+import batchgen.dataset_initial as dataset_init
 
-from model.vit_3d_newps_dist import ViT_encoder_decoder, ViT_vary_encoder_decoder, ViT_vary_encoder_decoder_partial_structure, ViT_vary_encoder_decoder_biggan_block
+#from model.vit_3d_newps_dist import ViT_encoder_decoder, ViT_vary_encoder_decoder, ViT_vary_encoder_decoder_partial_structure, ViT_vary_encoder_decoder_biggan_block
+import model.vit_3d_newps_dist as vit
 import random
 import argparse
 
@@ -44,7 +42,7 @@ with open("example_ids/new-dipeptide-AA-type-noclash_new2.list") as myfile1:
 examples  = [x.rstrip() for x in examples]
 
 
-dataset_initial.create_batches()
+dataset_init.create_batches()
 
 
 
@@ -136,7 +134,7 @@ def pearson_r_loss(output, target): #calculate pearson r coefficient for central
     return cost
     
     
-def pearson_r_loss3(output, target): #calculate pearson r coefficient for central region
+def pearson_r_loss2(output, target): #calculate pearson r coefficient for central region
 
     x = output[:,0,:,:,:]
     if target.dim() > 5:
@@ -206,7 +204,7 @@ args = parser.parse_args()
 
 
 if args.max_partial_structure>-1:
-    model = ViT_vary_encoder_decoder_partial_structure(
+    model = vit.ViT_vary_encoder_decoder_partial_structure(
         args=args,
         num_partial_structure = args.max_partial_structure, #max number of amino acid (partial structure) 
         image_height = args.max_image_height,          # max image size
@@ -226,7 +224,7 @@ if args.max_partial_structure>-1:
         recycle = False
     ).to(device)
 elif args.biggan_block_num>-1:
-    model = ViT_vary_encoder_decoder_biggan_block(
+    model = vit.ViT_vary_encoder_decoder_biggan_block(
         args=args,
         image_height = args.max_image_height,          # max image size
         image_width = args.max_image_width,
@@ -242,7 +240,7 @@ elif args.biggan_block_num>-1:
         biggan_block_num=args.biggan_block_num
     ).to(device)
 else:
-    model = ViT_vary_encoder_decoder(
+    model = vit.ViT_vary_encoder_decoder(
         args=args,
         image_height = args.max_image_height,          # max image size
         image_width = args.max_image_width,
@@ -321,7 +319,6 @@ while epoch < n_epochs:
     acc1 = 0.0
     acc2 = 0.0
     acc3 = 0.0
-    acc4 = 0.0
     with torch.no_grad(): #calculate loss and pearson r for all validation set elements
         for x, ps, y in test_loader: 
             x, ps, y = x.to(device), ps.to(device), y.to(device)
@@ -330,23 +327,20 @@ while epoch < n_epochs:
             loss3 = criterion(yhat, y)
             loss4 = pearson_r_loss(yhat, y)
             loss5 = fft_loss(x, yhat)
-            loss6 = pearson_r_loss2(yhat, y)
             acc1 += float(loss3.item())
             acc2 += float(loss4.item())
             acc3 += float(loss5.item())
-            acc4 += float(loss6.item())
             torch.cuda.empty_cache()
     
     #store average value of metrics
     test1.append(acc1 / n_test)
     curacc = (acc2 / n_test)
     curacc2 = (acc3 / n_test)
-    curacc3 = (acc4 / n_test)
     test2.append(curacc)
-    print("%d %.10f %.6f %.6f %.6f %.10f" % (epoch, (acc / n_train), curacc, curacc2, curacc3, scheduler.get_last_lr()[0]))
+    print("%d %.10f %.6f %.6f %.10f" % (epoch, (acc / n_train), curacc, curacc2, scheduler.get_last_lr()[0]))
     
     
     if (epoch % 3 == 0):
-        dataset_initial.create_batches()  
+        dataset_init.create_batches()  
     
     epoch += 1

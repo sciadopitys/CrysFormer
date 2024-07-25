@@ -1,20 +1,17 @@
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
 import torch 
 import torch.nn as nn
 import torch.fft
 import torch.cuda
-import csv
 import numpy as np
-import sys
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-import time
-import math
 import statistics
-from model.vit_3d_newps_dist import ViT_encoder_decoder, ViT_vary_encoder_decoder, ViT_vary_encoder_decoder_partial_structure, ViT_vary_encoder_decoder_biggan_block
+#from model.vit_3d_newps_dist import ViT_encoder_decoder, ViT_vary_encoder_decoder, ViT_vary_encoder_decoder_partial_structure, ViT_vary_encoder_decoder_biggan_block
+import model.vit_3d_newps_dist as vit
 import argparse
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu') #use GPU if possible
@@ -135,7 +132,7 @@ test_loader = torch.utils.data.DataLoader(dataset=dataset_val, shuffle = False, 
 
 parser = argparse.ArgumentParser(description='simple distributed training job')
 
-parser.add_argument('--total_epochs', default=99, type=int, help='Total epochs to train the model')
+parser.add_argument('--total_epochs', default=80, type=int, help='Total epochs to train the model')
 parser.add_argument('--lr_lambda', default=2, type=int, help='lr scheduler')
 parser.add_argument('--max_frame_size',default=88, type=int, help='max size')
 parser.add_argument('--max_image_height',default=72, type=int, help='max size')
@@ -149,9 +146,9 @@ parser.add_argument('--FFT_skip', default = False, help='FFT')
 parser.add_argument('--transformer', default='Nystromformer',type=str , help='transformer type: normal or Nystromformer')
 
 parser.add_argument('--dim',default=512, type=int, help='dim')
-parser.add_argument('--depth',default=10, type=int, help='depth')
+parser.add_argument('--depth',default=6, type=int, help='depth')
 parser.add_argument('--heads',default=8, type=int, help='heads')
-parser.add_argument('--mlp_dim',default=2048, type=int, help='mlp_dim')
+parser.add_argument('--mlp_dim',default=512, type=int, help='mlp_dim')
 
 parser.add_argument('--max_partial_structure',default=15, type=int, help='max number of partial_structure')
 parser.add_argument('--same_partial_structure_emb', default = True, help='whether use same partial structure embeding layer each transformer layer')
@@ -161,7 +158,7 @@ args = parser.parse_args()
 
 
 if args.max_partial_structure>-1:
-    model = ViT_vary_encoder_decoder_partial_structure(
+    model = vit.ViT_vary_encoder_decoder_partial_structure(
         args=args,
         num_partial_structure = args.max_partial_structure, #max number of amino acid (partial structure) 
         image_height = args.max_image_height,          # max image size
@@ -181,7 +178,7 @@ if args.max_partial_structure>-1:
         recycle = False
     ).to(device)
 elif args.biggan_block_num>-1:
-    model = ViT_vary_encoder_decoder_biggan_block(
+    model = vit.ViT_vary_encoder_decoder_biggan_block(
         args=args,
         image_height = args.max_image_height,          # max image size
         image_width = args.max_image_width,
@@ -197,7 +194,7 @@ elif args.biggan_block_num>-1:
         biggan_block_num=args.biggan_block_num
     ).to(device)
 else:
-    model = ViT_vary_encoder_decoder(
+    model = vit.ViT_vary_encoder_decoder(
         args=args,
         image_height = args.max_image_height,          # max image size
         image_width = args.max_image_width,

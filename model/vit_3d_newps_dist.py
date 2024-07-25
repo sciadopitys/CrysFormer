@@ -1,13 +1,11 @@
 import torch
-from torch import nn, einsum
+from torch import nn
 
 import math
-from einops import rearrange, repeat, reduce
+from einops import rearrange, repeat
 from einops.layers.torch import Rearrange
 from nystrom_attention import Nystromformer
-import torch.nn.functional as F
-import nystrom_ps_rapid
-import time
+import model.nystrom_ps_rapid as nystrom_att
 
 def pair(t):
     return t if isinstance(t, tuple) else (t, t)
@@ -156,7 +154,7 @@ class Transformer_partial_structure(nn.Module):
             for _ in range(depth):
                 self.layers.append(nn.ModuleList([
                     #PreNorm_partial_structure(dim, Attention_partial_structure(dim, heads = heads, dim_head = dim_head, dropout = dropout)),
-                    PreNorm_partial_structure(dim, nystrom_ps_rapid.Nystrom_attention_partial_structure(dim, heads = heads, dim_head = dim_head, num_landmarks = 64, residual = True, dropout = dropout)),
+                    PreNorm_partial_structure(dim, nystrom_att.Nystrom_attention_partial_structure(dim, heads = heads, dim_head = dim_head, num_landmarks = 64, residual = True, dropout = dropout)),
                     PreNorm(dim, FeedForward(dim, mlp_dim, dropout = dropout))
                 ]))
             self.partial_structure_to_patch_embedding = nn.Sequential(
@@ -169,7 +167,7 @@ class Transformer_partial_structure(nn.Module):
             for _ in range(depth):
                 self.layers.append(nn.ModuleList([
                     #PreNorm_partial_structure(dim, Attention_partial_structure(dim, heads = heads, dim_head = dim_head, dropout = dropout)),
-                    PreNorm_partial_structure(dim, nystrom_ps_rapid.Nystrom_attention_partial_structure(dim, heads = heads, dim_head = dim_head, num_landmarks = 64, residual = True, dropout = dropout)),
+                    PreNorm_partial_structure(dim, nystrom_att.Nystrom_attention_partial_structure(dim, heads = heads, dim_head = dim_head, num_landmarks = 64, residual = True, dropout = dropout)),
                     PreNorm(dim, FeedForward(dim, mlp_dim, dropout = dropout))
                 ]))
             self.partial_structure_rearrange=Rearrange('b p c (f pf) (h p1) (w p2) -> b (p f h w) (c p1 p2 pf)', p1 = patch_height, p2 = patch_width, pf = frame_patch_size)
