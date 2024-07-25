@@ -17,15 +17,8 @@ echo My job ran on: $SLURM_NODELIST
 echo My jobid was $SLURM_JOBID
 echo My submission directory was $SLURM_SUBMIT_DIR
 
-#source /home/sj52/program/ccp4-7.1/bin/ccp4.setup-sh
 start=`echo "($SLURM_ARRAY_TASK_ID-1)*1350+1" | bc`
 end=`echo "($SLURM_ARRAY_TASK_ID)*1350" | bc`
-
-#cat full_pdbID_list.txt | sed -n "$start ,$end p"
-
-# if [ $SLURM_ARRAY_TASK_ID == 1 ];
-#   then start=1
-# fi
 
 mkdir ../electron_density_pt_scaled
 for j in {0..19}
