@@ -61,12 +61,4 @@ For the initial training run, call "python3 train_initial.py".  To generate mode
 +-- patterson_pt_scaled_newps/ : Directory where normalized Patterson tensors will be placed (contains dummy file)
 +-- predictions/ : Directory where model predictions after the initial training run will be placed (contains dummy file)
 +-- shelxe/ : Script for performing our shelxe poly-alanine tracing run, see README.txt for additional details
-
-
-
-
-
-
-
-
 ```
