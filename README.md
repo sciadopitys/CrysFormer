@@ -20,7 +20,7 @@ These predictions can then be used to generate accurate atomic models using esta
 Extract the protein fragment files in pdb.tar.bz into 2_pdb_reweight_allatom_clean_reorient_center.  Then, run all step*_mpi.slurm scripts in the datagen directory in order (steps 4/5 can be performed in parallel, as can 6/7 and 8/9). Steps 3, 4, 5 require that the ccp4 program suite (https://www.ccp4.ac.uk/) is installed, as they make use of ccp4 command-line tools.  Replace the "source /path/to/ccp4-<version>/bin/ccp4.setup-sh" line in those scripts with a line corresponding to the installed version of ccp4.
 
 ## Environment/Dependencies
-Requires Torch version >= 1.12.0 and the einops version >= 0.6.0.
+Requires Torch version >= 1.12.0 and einops version >= 0.6.0.
 
 ## Training
 
@@ -29,10 +29,10 @@ For the initial training run, call "python3 train_initial.py".  To generate mode
 ## File Arrangement
 
 ```
-+-- get_predictions.py : Creates electron density predictions for training and test set examples based on saved model state after initial training run
++-- get_predictions.py : Creates electron density predictions for all training and test set examples based on the saved model state after the initial training run
 +-- pdb.tar.bz : Compressed archive of full set of processed protein fragment files in .pdb format
 +-- train_initial.py : Training script for initial training run
-+-- get_predictions.py : Training script for recycling training run
++-- train_recycle.py : Training script for recycling training run
 +-- 2_pdb_reweight_allatom_clean_reorient_center/ : A few examples of our protein fragment files
 |   +-- README.md: Description of the nomenclature for our example identifiers
 +-- 9_electron_density_pt_scaled/ : Standardized electron densities of proteinogenic amino acid residues (i.e. "partial structures")
@@ -51,9 +51,9 @@ For the initial training run, call "python3 train_initial.py".  To generate mode
 |   +-- step8_mpi.slurm: Normalizes tensors derived from Patterson maps
 |   +-- step9_mpi.slurm: Normalizes tensors derived from electron density maps
 +-- electron_density_pt_scaled_newps/ : Directory where normalized electron density tensors will be placed (contains dummy file)
-+-- example_ids/ : Various files that specify the training and test set examples and training batches
++-- example_ids/ : Various files that specify the training and test set examples, and training batches
 |   +-- new-dipeptide-AA-type-noclash_new2.list: Lists the 15-residue primary amino acid sequence for all training and test set examples
-|   +-- size_indices_new1.txt: Lists indices that delimit training set examples of different shape (for this dataset, all examples have the same shape)
+|   +-- size_indices_new1.txt: Lists indices that delimit training set examples of different shapes (for this dataset, all examples have the same shape)
 |   +-- test_new_dataset2.txt: Lists test set examples
 |   +-- train_new_dataset2.txt: Lists training set examples
 |   +-- training_indices_new2.txt: Lists indices that delimit training batches
