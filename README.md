@@ -8,7 +8,7 @@ Yet, such methods only focus on sequence information.
 Other available prior knowledge could also be utilized, such as constructs derived from X-ray crystallography experiments and the known structures of the most common conformations of amino acid residues, which we refer to as partial structures. 
 To the best of our knowledge, we propose the first transformer-based model that directly utilizes experimental protein crystallographic data and partial structure information to calculate electron density maps of proteins. 
 In particular, we use Patterson maps which can be directly obtained from X-ray crystallography experimental data, thus bypassing the well-known crystallographic phase problem. 
-We demonstrate that our method, \texttt{CrysFormer}, achieves precise predictions on two synthetic datasets of peptide fragments in crystalline forms, one with two residues per unit cell and the other with fifteen. 
+We demonstrate that our method, CrysFormer, achieves precise predictions on two synthetic datasets of peptide fragments in crystalline forms, one with two residues per unit cell and the other with fifteen. 
 These predictions can then be used to generate accurate atomic models using established crystallographic refinement programs.
 
 <p align="center">
