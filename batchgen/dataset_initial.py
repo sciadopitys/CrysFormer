@@ -81,7 +81,7 @@ def create_batches():
             new_y = torch.unsqueeze(new_y, 0)
             ylist.append(new_y)
 
-        # convert to PyTorch tensors
+        # combine corresponding tensors
         data_x = torch.stack(xlist)
         data_ps = torch.stack(pslist)
         data_y = torch.stack(ylist)
