@@ -77,13 +77,13 @@ def create_batches():
                         res_t = torch.load('9_electron_density_pt_scaled/' + cur_res + '1.pt')
                         xlist1.append(res_t)
                     
-            new_xlist = torch.stack(xlist1)
+            new_ps = torch.stack(xlist1)
             
             # concatenate Patterson and template tensors
             new_xcomb = torch.cat((new_x, new_x3), 0)
             
             xlist.append(new_xcomb)
-            pslist.append(new_xlist)
+            pslist.append(new_ps)
 
             # load in ground truth electron density
             new_y = torch.load('electron_density_pt_scaled/' + trainlist[j] + '_fft.pt')
