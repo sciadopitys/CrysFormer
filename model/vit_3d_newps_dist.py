@@ -56,7 +56,6 @@ class Transformer_partial_structure(nn.Module):
             # Create transformer blocks of attention block followed by feedforward block
             for _ in range(depth):
                 self.layers.append(nn.ModuleList([
-                    #PreNorm_partial_structure(dim, Attention_partial_structure(dim, heads = heads, dim_head = dim_head, dropout = dropout)),
                     PreNorm_partial_structure(dim, nystrom_att.Nystrom_attention_partial_structure(dim, heads = heads, dim_head = dim_head, num_landmarks = 64, residual = True, dropout = dropout)),
                     PreNorm(dim, FeedForward(dim, mlp_dim, dropout = dropout))
                 ]))
@@ -71,7 +70,6 @@ class Transformer_partial_structure(nn.Module):
         else:
             for _ in range(depth):
                 self.layers.append(nn.ModuleList([
-                    #PreNorm_partial_structure(dim, Attention_partial_structure(dim, heads = heads, dim_head = dim_head, dropout = dropout)),
                     PreNorm_partial_structure(dim, nystrom_att.Nystrom_attention_partial_structure(dim, heads = heads, dim_head = dim_head, num_landmarks = 64, residual = True, dropout = dropout)),
                     PreNorm(dim, FeedForward(dim, mlp_dim, dropout = dropout))
                 ]))
@@ -332,5 +330,6 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
         x= x[:,:,pad_list[4]:(x.shape[2]-pad_list[5]),pad_list[2]:(x.shape[3]-pad_list[3]),pad_list[0]:(x.shape[4]-pad_list[1])]
         
         return(x)
+
 
 
