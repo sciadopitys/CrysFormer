@@ -186,10 +186,7 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
         super().__init__()
 
 
-        self.FFT=args.FFT
-        self.iFFT=args.iFFT
         self.activation=args.activation
-        self.FFT_skip=args.FFT_skip
         same_partial_structure_emb=args.same_partial_structure_emb
 
         # Define initial convolutions on Patterson map and partial structure
@@ -330,6 +327,7 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
         x= x[:,:,pad_list[4]:(x.shape[2]-pad_list[5]),pad_list[2]:(x.shape[3]-pad_list[3]),pad_list[0]:(x.shape[4]-pad_list[1])]
         
         return(x)
+
 
 
 
