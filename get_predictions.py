@@ -133,81 +133,43 @@ test_loader = torch.utils.data.DataLoader(dataset=dataset_val, shuffle = False, 
 parser = argparse.ArgumentParser(description='simple distributed training job')
 
 parser.add_argument('--total_epochs', default=80, type=int, help='Total epochs to train the model')
-parser.add_argument('--lr_lambda', default=2, type=int, help='lr scheduler')
-parser.add_argument('--max_frame_size',default=88, type=int, help='max size')
-parser.add_argument('--max_image_height',default=72, type=int, help='max size')
-parser.add_argument('--max_image_width',default=60, type=int, help='max size')
-parser.add_argument('--ps_size',default=24, type=int, help='max size')
-parser.add_argument('--patch_size',default=4, type=int, help='patch size')
-parser.add_argument('--activation',default='tanh', type=str, help='activation function')
-parser.add_argument('--FFT', default = False, help='FFT')
-parser.add_argument('--iFFT', default = False, help='FFT')
-parser.add_argument('--FFT_skip', default = False, help='FFT')
-parser.add_argument('--transformer', default='Nystromformer',type=str , help='transformer type: normal or Nystromformer')
+parser.add_argument('--max_image_height',default=88, type=int, help='max size of Patterson/ground truth in first spatial dimension')
+parser.add_argument('--max_image_width',default=72, type=int, help='max size of Patterson/ground truth in second spatial dimension')
+parser.add_argument('--max_image_depth',default=60, type=int, help='max size of Patterson/ground truth in third spatial dimension')
+parser.add_argument('--ps_size',default=24, type=int, help='maximum side length of cubic partial structures')
+parser.add_argument('--patch_size',default=4, type=int, help='patch size (all dimensions)')
+parser.add_argument('--activation',default='tanh', type=str, help='final activation function')
 
-parser.add_argument('--dim',default=512, type=int, help='dim')
-parser.add_argument('--depth',default=6, type=int, help='depth')
-parser.add_argument('--heads',default=8, type=int, help='heads')
-parser.add_argument('--mlp_dim',default=512, type=int, help='mlp_dim')
+parser.add_argument('--dim',default=512, type=int, help='token embedding dimension')
+parser.add_argument('--depth',default=6, type=int, help='transformer depth')
+parser.add_argument('--heads',default=8, type=int, help='number of attention heads')
+parser.add_argument('--mlp_dim',default=512, type=int, help='dimensionality within feedforward MLP')
 
-parser.add_argument('--max_partial_structure',default=15, type=int, help='max number of partial_structure')
-parser.add_argument('--same_partial_structure_emb', default = True, help='whether use same partial structure embeding layer each transformer layer')
+parser.add_argument('--max_partial_structure',default=15, type=int, help='max number of partial_structures')
+parser.add_argument('--same_partial_structure_emb', default = True, help='whether to use a constant partial structure embedding in each transformer layer')
 
-parser.add_argument('--biggan_block_num',default=2, type=int, help='number of additional biggan block')
+parser.add_argument('--biggan_block_num',default=2, type=int, help='number of post-transformer BigGAN residual convolution')
 args = parser.parse_args()
 
-
-if args.max_partial_structure>-1:
-    model = vit.ViT_vary_encoder_decoder_partial_structure(
-        args=args,
-        num_partial_structure = args.max_partial_structure, #max number of amino acid (partial structure) 
-        image_height = args.max_image_height,          # max image size
-        image_width = args.max_image_width,
-        frames = args.max_frame_size,               # max number of frames
-        image_patch_size = args.patch_size,     # image patch size
-        frame_patch_size = args.patch_size,      # frame patch size
-        ps_size = args.ps_size,
-        dim = args.dim,
-        depth = args.depth,
-        heads = args.heads,
-        mlp_dim = args.mlp_dim,
-        same_partial_structure_emb=args.same_partial_structure_emb,
-        dropout = 0.1,
-        emb_dropout = 0.1,
-        biggan_block_num=args.biggan_block_num,
-        recycle = False
-    ).to(device)
-elif args.biggan_block_num>-1:
-    model = vit.ViT_vary_encoder_decoder_biggan_block(
-        args=args,
-        image_height = args.max_image_height,          # max image size
-        image_width = args.max_image_width,
-        frames = args.max_frame_size,               # max number of frames
-        image_patch_size = args.patch_size,     # image patch size
-        frame_patch_size = args.patch_size,      # frame patch size
-        dim = args.dim,
-        depth = args.depth,
-        heads = args.heads,
-        mlp_dim = args.mlp_dim,
-        dropout = 0.1,
-        emb_dropout = 0.1,
-        biggan_block_num=args.biggan_block_num
-    ).to(device)
-else:
-    model = vit.ViT_vary_encoder_decoder(
-        args=args,
-        image_height = args.max_image_height,          # max image size
-        image_width = args.max_image_width,
-        frames = args.max_frame_size,               # max number of frames
-        image_patch_size = args.patch_size,     # image patch size
-        frame_patch_size = args.patch_size,      # frame patch size
-        dim = args.dim,
-        depth = args.depth,
-        heads = args.heads,
-        mlp_dim = args.mlp_dim,
-        dropout = 0.1,
-        emb_dropout = 0.1
-    ).to(device)
+model = vit.ViT_vary_encoder_decoder_partial_structure(
+    args=args,
+    num_partial_structure = args.max_partial_structure, 
+    image_height = args.max_image_height,         
+    image_width = args.max_image_width,
+    image_depth = args.max_image_depth,               
+    image_patch_size = args.patch_size,      
+    ps_size = args.ps_size,
+    dim = args.dim,
+    depth = args.depth,
+    heads = args.heads,
+    mlp_dim = args.mlp_dim,
+    same_partial_structure_emb=args.same_partial_structure_emb,
+    dropout = 0.1,
+    emb_dropout = 0.1,
+    biggan_block_num=args.biggan_block_num,
+    channels = 10,
+    recycle = False
+).to(device)
     
     
 #loading model state
