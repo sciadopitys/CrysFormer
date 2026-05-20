@@ -131,7 +131,7 @@ class Transformer_partial_structure(nn.Module):
 # Post-transformer residual blocks
 class BigGANBlock(nn.Module):
 
-    def __init__(self, in_channels, out_channels, stride=1):
+    def __init__(self, in_channels, out_channels):
         super().__init__()
 
         self.in_channels=in_channels
@@ -162,7 +162,7 @@ class BigGANBlock(nn.Module):
         
         res=x
 
-        x = self.relu(x)
+        x = torch.nn.functional.relu(x)
         x = self.bn1(x)
         x = self.conv1(x)
         x = self.relu(x)
@@ -186,19 +186,17 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
         super().__init__()
 
 
-        self.activation=args.activation
-        same_partial_structure_emb=args.same_partial_structure_emb
-
+        self.channels = channels
         # Define initial convolutions on Patterson map and partial structure
         if recycle: # First convolutional layer accepts an additional input channel during recycling runs
-            self.conv1 = nn.Conv3d(in_channels=2, out_channels=10, kernel_size=7, padding=3, bias=False, padding_mode='circular')
+            self.conv1 = nn.Conv3d(in_channels=2, out_channels=channels, kernel_size=7, padding=3, bias=False, padding_mode='circular')
         else:
-            self.conv1 = nn.Conv3d(in_channels=1, out_channels=10, kernel_size=7, padding=3, bias=False, padding_mode='circular')
-        self.bn1 = nn.BatchNorm3d(10)
+            self.conv1 = nn.Conv3d(in_channels=1, out_channels=channels, kernel_size=7, padding=3, bias=False, padding_mode='circular')
+        self.bn1 = nn.BatchNorm3d(channels)
         channels=10
 
-        self.conv1_p = nn.Conv3d(in_channels=1, out_channels=10, kernel_size=7, padding=3, bias=False, padding_mode='circular')
-        self.bn1_p = nn.BatchNorm3d(10)
+        self.conv1_p = nn.Conv3d(in_channels=1, out_channels=channels, kernel_size=7, padding=3, bias=False, padding_mode='circular')
+        self.bn1_p = nn.BatchNorm3d(channels)
 
         patch_height = patch_width = patch_depth = image_patch_s
 
@@ -236,10 +234,19 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
         self.biggan_block_num=biggan_block_num
         self.bigGAN_layers=nn.ModuleList([])
         for i in range(biggan_block_num):
-            self.bigGAN_layers.append(BigGANBlock(10,10))
+            self.bigGAN_layers.append(BigGANBlock(channels,10))
 
         self.conv2 = nn.Conv3d(in_channels=10, out_channels=1, kernel_size=3, padding=1)
 
+        # Allow different final activations
+        if args.activation=='tanh':
+            self.act_final = nn.Tanh()
+        elif args.activation=='sigmoid':
+            self.act_final = nn.Sigmoid()
+        elif args.activation=='relu':
+            self.act_final = nn.ReLU(inplace=True)
+        else:
+            self.act_final = nn.Identity()
 
     def forward(self, x, ps):
 
@@ -304,7 +311,7 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
 
         # Convert from tokens back to 3D shape
         x = self.from_patch_embedding(x)
-        x = rearrange(x, 'b (h w d) (ph pw pd c) -> b c (h ph) (w pw) (d pd)', h=x_shape[2] // self.patch_height, w=x_shape[3] // self.patch_width, d=x_shape[4] // self.patch_depth, ph = self.patch_height, pw = self.patch_width, pd = self.patch_depth, c=10)
+        x = rearrange(x, 'b (h w d) (ph pw pd c) -> b c (h ph) (w pw) (d pd)', h=x_shape[2] // self.patch_height, w=x_shape[3] // self.patch_width, d=x_shape[4] // self.patch_depth, ph = self.patch_height, pw = self.patch_width, pd = self.patch_depth, c=self.channels)
 
         # Post-transformer CNN
         for i in range(self.biggan_block_num):
@@ -312,15 +319,7 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
 
         x = self.conv2(x)
 
-        # Allow different final activations
-        if self.activation=='tanh':
-            x = torch.tanh(x)
-        elif self.activation=='sigmoid':
-            x = torch.sigmoid(x)
-        elif self.activation=='None':
-            x = x
-        elif self.activation=='relu':
-            x = torch.torch.nn.functional.relu(x)
+        x = self.act_final(x)
             
         # Extract out regions corresponding to unpadded dimensions
         x= x[:,:,pad_list[4]:(x.shape[2]-pad_list[5]),pad_list[2]:(x.shape[3]-pad_list[3]),pad_list[0]:(x.shape[4]-pad_list[1])]
