@@ -197,7 +197,7 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
         self.conv1_p = nn.Conv3d(in_channels=1, out_channels=channels, kernel_size=7, padding=3, bias=False, padding_mode='circular')
         self.bn1_p = nn.BatchNorm3d(channels)
 
-        patch_height = patch_width = patch_depth = image_patch_s
+        patch_height = patch_width = patch_depth = image_patch_size
 
         self.patch_height=patch_height
         self.patch_width=patch_width
