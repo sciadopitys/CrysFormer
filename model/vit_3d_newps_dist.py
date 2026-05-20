@@ -193,7 +193,6 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
         else:
             self.conv1 = nn.Conv3d(in_channels=1, out_channels=channels, kernel_size=7, padding=3, bias=False, padding_mode='circular')
         self.bn1 = nn.BatchNorm3d(channels)
-        channels=10
 
         self.conv1_p = nn.Conv3d(in_channels=1, out_channels=channels, kernel_size=7, padding=3, bias=False, padding_mode='circular')
         self.bn1_p = nn.BatchNorm3d(channels)
