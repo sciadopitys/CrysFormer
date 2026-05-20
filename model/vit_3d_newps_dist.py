@@ -233,7 +233,8 @@ class ViT_vary_encoder_decoder_partial_structure(nn.Module):
         self.biggan_block_num=biggan_block_num
         self.bigGAN_layers=nn.ModuleList([])
         for i in range(biggan_block_num):
-            self.bigGAN_layers.append(BigGANBlock(channels,10))
+            in_ch = channels if i == 0 else 10
+            self.bigGAN_layers.append(BigGANBlock(in_ch,10))
 
         self.conv2 = nn.Conv3d(in_channels=10, out_channels=1, kernel_size=3, padding=1)
 
